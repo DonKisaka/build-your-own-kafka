@@ -10,7 +10,9 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Defines the wire protocol for Build Your Own Kafka
+ */
 
 public class Protocol {
 
