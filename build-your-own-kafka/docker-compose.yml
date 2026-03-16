@@ -1,0 +1,105 @@
+services:
+  zookeeper:
+    image: zookeeper:3.9
+    container_name: zookeeper
+    restart: unless-stopped
+    ports:
+      - "2181:2181"
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_TICK_TIME: 2000
+    volumes:
+      - zookeeper-data:/data
+      - zookeeper-datalog:/datalog
+    networks:
+      - kafka-network
+    healthcheck:
+      test: ["CMD", "zkServer.sh", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+
+  broker-1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: broker-1
+    restart: unless-stopped
+    ports:
+      - "9092:9092"
+    environment:
+      BROKER_ID: 1
+      BROKER_HOST: broker-1
+      BROKER_PORT: 9092
+      BROKER_DATA_DIR: /data
+      ZOOKEEPER_HOST: zookeeper
+      ZOOKEEPER_PORT: 2181
+    volumes:
+      - broker-1-data:/data
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    networks:
+      - kafka-network
+
+
+  broker-2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: broker-2
+    restart: unless-stopped
+    ports:
+      - "9093:9093"
+    environment:
+      BROKER_ID: 2
+      BROKER_HOST: broker-2
+      BROKER_PORT: 9093
+      BROKER_DATA_DIR: /data
+      ZOOKEEPER_HOST: zookeeper
+      ZOOKEEPER_PORT: 2181
+    volumes:
+      - broker-2-data:/data
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    networks:
+      - kafka-network
+
+
+  broker-3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: broker-3
+    restart: unless-stopped
+    ports:
+      - "9094:9094"
+    environment:
+      BROKER_ID: 3
+      BROKER_HOST: broker-3
+      BROKER_PORT: 9094
+      BROKER_DATA_DIR: /data
+      ZOOKEEPER_HOST: zookeeper
+      ZOOKEEPER_PORT: 2181
+    volumes:
+      - broker-3-data:/data
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    networks:
+      - kafka-network
+
+
+volumes:
+  zookeeper-data:
+  zookeeper-datalog:
+  broker-1-data:
+  broker-2-data:
+  broker-3-data:
+
+
+networks:
+  kafka-network:
+    driver: bridge
