@@ -1,4 +1,4 @@
-FROM maven:3.9.9-eclipse-temurin-25-alpine AS builder
+FROM maven:3.9.14-eclipse-temurin-25-alpine AS builder
 
 WORKDIR /build
 
@@ -20,17 +20,7 @@ FROM eclipse-temurin:25-jdk-alpine AS jre-builder
 
 
 RUN jlink \
-    --add-modules \
-        java.base,\
-        java.logging,\
-        java.naming,\
-        java.management,\
-        java.security.jgss,\
-        java.instrument,\
-        java.net.http,\
-        java.sql,\
-        jdk.unsupported,\
-        jdk.crypto.ec \
+    --add-modules --add-modules java.base,java.logging,java.naming,java.management,java.security.jgss,java.instrument,java.net.http,java.sql,jdk.unsupported,jdk.crypto.ec \
     --strip-debug \
     --no-man-pages \
     --no-header-files \
